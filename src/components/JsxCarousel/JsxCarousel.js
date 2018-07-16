@@ -6,7 +6,8 @@ import Slide from './Slide';
 import ActiveSlide from './ActiveSlide';
 import Slides from './Slides';
 
-const PrevSlide = ({ slide }) => <div className="JsxCarousel__slider__prev JsxCarousel__slide-container">{slide.el}</div>;
+const PrevSlide = ({ slide }) => <div
+    className="JsxCarousel__slider__prev JsxCarousel__slide-container">{slide.el}</div>;
 
 class JsxCarousel extends Component {
     velocity = 40;
@@ -37,28 +38,28 @@ class JsxCarousel extends Component {
     };
 
     handleMove = (clientX) => {
-        if (!this.state.inMotion)
+        if ( !this.state.inMotion )
             return;
 
         const x = clientX - this.state.initialX;
         this.setState({ left: x });
 
-        if (x < (-.8 * this.width))
+        if ( x < (-.8 * this.width) )
             this.handleEnd();
     };
 
     handleEnd = () => {
-        if (this.timeout) {
+        if ( this.timeout ) {
             window.clearTimeout(this.timeout);
             this.timeout = null;
         }
 
-        if (!this.state.inMotion)
+        if ( !this.state.inMotion )
             return;
 
-        if (this.state.left < (this.width * -.3))
+        if ( this.state.left < (this.width * -.3) )
             this.animateToNext();
-        else if (this.state.left > (this.width * .3))
+        else if ( this.state.left > (this.width * .3) )
             this.animateToPrev();
         else
             this.setState({
@@ -87,10 +88,10 @@ class JsxCarousel extends Component {
             let { left } = this.state;
             const path = Math.abs(dst - left);
 
-            if (this.state.animation)
+            if ( this.state.animation )
                 window.cancelAnimationFrame(this.state.animation);
 
-            if (dst === left || path < (this.velocity / 10) || (dst < 0 && left <= dst) || (dst > 0 && left >= dst)) {
+            if ( dst === left || path < this.velocity || (dst < 0 && left <= dst) || (dst > 0 && left >= dst) ) {
                 this.setState({
                     current: next,
                     left: 0,
@@ -100,8 +101,7 @@ class JsxCarousel extends Component {
                 });
                 return;
             }
-
-            let velocity = Math.max(this.velocity * path / t, 5) * (left > dst ? -1 : 1);
+            let velocity = Math.max(this.velocity * path / t, 50) * (left > dst ? -1 : 1);
 
             this.setState({
                 left: left + velocity,
@@ -134,9 +134,7 @@ class JsxCarousel extends Component {
         this.handleMove(mouseMoveEvent.clientX);
     };
 
-    handleMouseUp = () => {
-        this.handleEnd();
-    };
+    handleMouseUp = () => this.handleEnd();
 
     handleMouseLeave = () => this.handleMouseUp();
 
@@ -147,38 +145,39 @@ class JsxCarousel extends Component {
         const prev = slides[current === 0 ? slides.length - 1 : current - 1];
 
         return (
-          <div className="section-winners">
-            <div className="JsxCarousel">
-              <div className="JsxCarousel__wrapper">
-                <div className="container-large">
-                  <div
-                    className="JsxCarousel__slider"
-                    onTouchStart={this.handleTouchStart}
-                    onTouchMove={this.handleTouchMove}
-                    onTouchEnd={this.handleTouchEnd}
-                    onMouseDown={this.handleMouseDown}
-                    onMouseMove={this.handleMouseMove}
-                    onMouseUp={this.handleMouseUp}
-                    onMouseLeave={this.handleMouseLeave}
-                  >
-                    <PrevSlide slide={prev} />
-                    <ActiveSlide slide={selected} transform={left} />
-                    <Slides slides={slides} ix={current} transform={left} onClick={this.animateToNext} />
-                  </div>
+            <div className="section-winners">
+                <div className="JsxCarousel">
+                    <div className="JsxCarousel__wrapper">
+                        <div className="container-large">
+                            <div
+                                className="JsxCarousel__slider"
+                                onTouchStart={this.handleTouchStart}
+                                onTouchMove={this.handleTouchMove}
+                                onTouchEnd={this.handleTouchEnd}
+                                onMouseDown={this.handleMouseDown}
+                                onMouseMove={this.handleMouseMove}
+                                onMouseUp={this.handleMouseUp}
+                                onMouseLeave={this.handleMouseLeave}
+                            >
+                                <PrevSlide slide={prev}/>
+                                <ActiveSlide slide={selected} transform={left}/>
+                                <Slides slides={slides} ix={current} transform={left} onClick={this.animateToNext}/>
+                            </div>
+                        </div>
+                        <div className="container">
+                            <div className="indent">
+                                <Description slide={selected}/>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="container">
+                        <div className="indent">
+                            <Thumbnails slides={slides} active={current}
+                                        onSelect={ix => this.animateTo(-1 * this.width, ix)()}/>
+                        </div>
+                    </div>
                 </div>
-                <div className="container">
-                  <div className="indent">
-                    <Description slide={selected} />
-                  </div>
-                </div>
-              </div>
-              <div className="container">
-                <div className="indent">
-                  <Thumbnails slides={slides} active={current} onSelect={ix => this.animateTo(-1 * this.width, ix)()} />
-                </div>
-              </div>
             </div>
-          </div>
         );
     }
 
